@@ -1,0 +1,152 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.Random;
+
+class OnlineReservationSystem {
+    static class Reservation {
+        String pnr;
+        String passengerName;
+        String trainNumber;
+        String trainName;
+        String classType;
+        String journeyDate;
+        String fromPlace;
+        String toPlace;
+
+        Reservation(String pnr, String passengerName, String trainNumber, String trainName, 
+                    String classType, String journeyDate, String fromPlace, String toPlace) {
+            this.pnr = pnr;
+            this.passengerName = passengerName;
+            this.trainNumber = trainNumber;
+            this.trainName = trainName;
+            this.classType = classType;
+            this.journeyDate = journeyDate;
+            this.fromPlace = fromPlace;
+            this.toPlace = toPlace;
+        }
+    }
+
+    static ArrayList<Reservation> database = new ArrayList<>();
+    static Scanner scanner = new Scanner(System.in);
+    static Random rand = new Random();
+
+    public static void main(String[] args) {
+        System.out.println("Welcome to My Train Reservation System!");
+        System.out.println("Login to start booking or cancelling tickets.\n");
+
+        if (login()) {
+            while (true) {
+                System.out.println("\n=== Main Menu ===");
+                System.out.println("1. Make a Reservation");
+                System.out.println("2. Cancel a Reservation");
+                System.out.println("3. Exit");
+                System.out.print("Choose an option: ");
+                int choice = scanner.nextInt();
+                scanner.nextLine();
+
+                if (choice == 1) {
+                    reservationForm();
+                } else if (choice == 2) {
+                    cancellationForm();
+                } else if (choice == 3) {
+                    System.out.println("Thanks for using my system! Goodbye!");
+                    break;
+                } else {
+                    System.out.println("Invalid choice, try again!");
+                }
+            }
+        } else {
+            System.out.println("Login failed. Exiting system.");
+        }
+        scanner.close();
+    }
+
+    static boolean login() {
+        String validUser = "admin";
+        String validPass = "pass123";
+        int attempts = 3;
+
+        while (attempts > 0) {
+            System.out.print("Enter username: ");
+            String username = scanner.nextLine();
+            System.out.print("Enter password: ");
+            String password = scanner.nextLine();
+
+            if (username.equals(validUser) && password.equals(validPass)) {
+                System.out.println("Login successful! Welcome aboard!");
+                return true;
+            } else {
+                attempts--;
+                System.out.println("Wrong credentials! " + attempts + " attempts left.");
+            }
+        }
+        return false;
+    }
+
+    static void reservationForm() {
+        System.out.println("\n--- Train Reservation Form ---");
+        System.out.print("Enter passenger name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter train number: ");
+        String trainNum = scanner.nextLine();
+
+        String trainName = getTrainName(trainNum);
+        System.out.println("Train name: " + trainName);
+
+        System.out.print("Enter class type (e.g., AC, Sleeper): ");
+        String classType = scanner.nextLine();
+        System.out.print("Enter journey date (e.g., DD-MM-YYYY): ");
+        String date = scanner.nextLine();
+        System.out.print("Enter from place: ");
+        String from = scanner.nextLine();
+        System.out.print("Enter destination: ");
+        String to = scanner.nextLine();
+
+        String pnr = "PNR" + (100000 + rand.nextInt(900000));
+
+        Reservation res = new Reservation(pnr, name, trainNum, trainName, classType, date, from, to);
+        database.add(res);
+
+        System.out.println("Reservation successful! Your PNR is: " + pnr);
+    }
+
+    static void cancellationForm() {
+        System.out.println("\n--- Ticket Cancellation Form ---");
+        System.out.print("Enter PNR number: ");
+        String pnr = scanner.nextLine();
+
+        for (Reservation res : database) {
+            if (res.pnr.equals(pnr)) {
+                System.out.println("Reservation Details:");
+                System.out.println("PNR: " + res.pnr);
+                System.out.println("Passenger: " + res.passengerName);
+                System.out.println("Train: " + res.trainName + " (" + res.trainNumber + ")");
+                System.out.println("Class: " + res.classType);
+                System.out.println("Date: " + res.journeyDate);
+                System.out.println("From: " + res.fromPlace + " to: " + res.toPlace);
+
+                System.out.print("Confirm cancellation? (yes/no): ");
+                String confirm = scanner.nextLine();
+                if (confirm.equalsIgnoreCase("yes")) {
+                    database.remove(res);
+                    System.out.println("Ticket cancelled successfully!");
+                } else {
+                    System.out.println("Cancellation aborted.");
+                }
+                return;
+            }
+        }
+        System.out.println("No reservation found with PNR: " + pnr);
+    }
+
+    static String getTrainName(String trainNum) {
+        switch (trainNum) {
+            case "12345":
+                return "Express One";
+            case "67890":
+                return "Superfast Two";
+            default:
+                return "Unknown Train";
+        }
+    }
+}
