@@ -1,0 +1,57 @@
+import java.util.Scanner;
+import java.util.Random;
+
+
+class GuessTheNumberGame {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        Random randomNum = new Random();
+        
+        int score = 0; 
+        int rounds = 3; 
+        
+        System.out.println("Hey there! Welcome to my Guess the Number game!");
+        System.out.println("You'll play " + rounds + " rounds. Guess a number from 1 to 100.");
+        System.out.println("Points depend on how fast you guess it! Let's go!");
+
+  
+        for (int i = 1; i <= rounds; i++) {
+            int secretNumber = randomNum.nextInt(100) + 1; 
+            int maxTries = 7;
+            int tries = 0;
+            boolean gotIt = false;
+
+            System.out.println("\n***** Round " + i + " *****");
+
+            while (tries < maxTries) {
+                System.out.print("What's your guess? (Try " + (tries + 1) + "): ");
+                int guess = input.nextInt();
+                tries++;
+
+                if (guess == secretNumber) {
+                    System.out.println("Awesome, you nailed it!");
+                    int points = (maxTries - tries + 1) * 10; 
+                    score += points;
+                    System.out.println("You got " + points + " points this round!");
+                    gotIt = true;
+                    break;
+                } else if (guess < secretNumber) {
+                    System.out.println("Nope, too low. Guess higher!");
+                } else {
+                    System.out.println("Too high! Try a lower number.");
+                }
+            }
+
+            if (!gotIt) {
+                System.out.println("Oof, out of tries. The number was " + secretNumber + ".");
+            }
+        }
+
+      
+        System.out.println("\nGame over, folks!");
+        System.out.println("Your final score is: " + score + " points after " + rounds + " rounds.");
+        System.out.println("Thanks for playing my game! :D");
+        
+        input.close(); 
+    }
+}
